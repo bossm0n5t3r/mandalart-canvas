@@ -5,9 +5,10 @@ import { useMediaQuery } from 'react-responsive';
 import JSONEditor from '../components/JSONEditor';
 import MandalArtGrid from '../components/MandalArtGrid';
 import ResponsiveLayout from '../components/ResponsiveLayout';
+import { DEFAULT_MANDALART_MAP } from '../lib/utils';
 
 export default function Home() {
-  const [grid, setGrid] = useState(Array(9).fill(Array(9).fill('')));
+  const [mandalartMap, setMandalartMap] = useState(DEFAULT_MANDALART_MAP);
   const [isMobile, setIsMobile] = useState(false);
 
   const mobileQuery = useMediaQuery({ maxWidth: 768 });
@@ -17,32 +18,11 @@ export default function Home() {
   }, [mobileQuery]);
 
   const handleSave = () => {
-    console.log('Saving grid:', grid);
+    console.log('Saving grid:', mandalartMap);
   };
 
   const handleReset = () => {
-    setGrid(Array(9).fill(Array(9).fill('')));
-  };
-
-  const handleImport = (json: string) => {
-    try {
-      const importedGrid = JSON.parse(json);
-      if (
-        Array.isArray(importedGrid) &&
-        importedGrid.length === 9 &&
-        importedGrid.every((row) => Array.isArray(row) && row.length === 9)
-      ) {
-        setGrid(importedGrid);
-      } else {
-        throw new Error('Invalid grid format');
-      }
-    } catch (error) {
-      alert('Invalid JSON format. Please check your input.');
-    }
-  };
-
-  const handleExport = () => {
-    return JSON.stringify(grid, null, 2);
+    setMandalartMap(DEFAULT_MANDALART_MAP);
   };
 
   return (
@@ -51,8 +31,8 @@ export default function Home() {
         isMobile={isMobile}
         left={
           <MandalArtGrid
-            grid={grid}
-            setGrid={setGrid}
+            mandalartMap={mandalartMap}
+            setMandalartMap={setMandalartMap}
             onSave={handleSave}
             onReset={handleReset}
             isMobile={isMobile}
@@ -60,8 +40,8 @@ export default function Home() {
         }
         right={
           <JSONEditor
-            value={handleExport()}
-            onImport={handleImport}
+            mandalartMap={mandalartMap}
+            setMandalartMap={setMandalartMap}
             isMobile={isMobile}
           />
         }
