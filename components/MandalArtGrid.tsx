@@ -53,7 +53,7 @@ const MandalArtGrid: React.FC<MandalArtGridProps> = ({
     <div
       className={`p-4 bg-white rounded-lg shadow ${isMobile ? 'w-full' : ''}`}
     >
-      <h2 className="text-2xl font-bold mb-4">Mandal-art Planner</h2>
+      <h2 className="text-2xl font-bold mb-4">Mandalart Canvas</h2>
       <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="grid grid-cols-3 gap-1 sm:gap-2">
