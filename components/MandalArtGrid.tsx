@@ -1,23 +1,30 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { gridToMap, mapToGrid } from '../lib/utils';
 
 interface MandalArtGridProps {
-  grid: string[][];
-  setGrid: React.Dispatch<React.SetStateAction<string[][]>>;
+  mandalartMap: Map<string, { core: string; values: string[] }>;
+  setMandalartMap: (
+    value: React.SetStateAction<
+      Map<string, { core: string; values: string[] }>
+    >,
+  ) => void;
   onSave: () => void;
   onReset: () => void;
   isMobile: boolean;
 }
 
 const MandalArtGrid: React.FC<MandalArtGridProps> = ({
-  grid,
-  setGrid,
+  mandalartMap,
+  setMandalartMap,
   onSave,
   onReset,
   isMobile,
 }) => {
+  const [grid, setGrid] = useState(mapToGrid(mandalartMap));
+
   const handleCellChange = (
     rowIndex: number,
     colIndex: number,
@@ -28,8 +35,19 @@ const MandalArtGrid: React.FC<MandalArtGridProps> = ({
         rIndex === rowIndex && cIndex === colIndex ? value : cell,
       ),
     );
+    if (colIndex === 4) {
+      newGrid[4][rowIndex] = value;
+    }
+    if (rowIndex === 4) {
+      newGrid[colIndex][4] = value;
+    }
     setGrid(newGrid);
+    setMandalartMap(gridToMap(newGrid));
   };
+
+  useEffect(() => {
+    setGrid(mapToGrid(mandalartMap));
+  }, [mandalartMap]);
 
   return (
     <div
