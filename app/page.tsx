@@ -1,15 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import JSONEditor from '../components/JSONEditor';
 import MandalArtGrid from '../components/MandalArtGrid';
-import ResizableSplitLayout from '../components/ResizableSplitLayout';
+import ResponsiveLayout from '../components/ResponsiveLayout';
 
 export default function Home() {
   const [grid, setGrid] = useState(Array(9).fill(Array(9).fill('')));
+  const [isMobile, setIsMobile] = useState(false);
+
+  const mobileQuery = useMediaQuery({ maxWidth: 768 });
+
+  useEffect(() => {
+    setIsMobile(mobileQuery);
+  }, [mobileQuery]);
 
   const handleSave = () => {
-    // Implement save functionality (e.g., to localStorage or backend)
     console.log('Saving grid:', grid);
   };
 
@@ -39,17 +46,25 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100">
-      <ResizableSplitLayout
+    <main className="min-h-screen bg-gray-100 text-base sm:text-lg md:text-xl">
+      <ResponsiveLayout
+        isMobile={isMobile}
         left={
           <MandalArtGrid
             grid={grid}
             setGrid={setGrid}
             onSave={handleSave}
             onReset={handleReset}
+            isMobile={isMobile}
           />
         }
-        right={<JSONEditor value={handleExport()} onImport={handleImport} />}
+        right={
+          <JSONEditor
+            value={handleExport()}
+            onImport={handleImport}
+            isMobile={isMobile}
+          />
+        }
       />
     </main>
   );

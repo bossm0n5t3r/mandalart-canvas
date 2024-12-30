@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import React from 'react';
 
@@ -6,6 +8,7 @@ interface MandalArtGridProps {
   setGrid: React.Dispatch<React.SetStateAction<string[][]>>;
   onSave: () => void;
   onReset: () => void;
+  isMobile: boolean;
 }
 
 const MandalArtGrid: React.FC<MandalArtGridProps> = ({
@@ -13,6 +16,7 @@ const MandalArtGrid: React.FC<MandalArtGridProps> = ({
   setGrid,
   onSave,
   onReset,
+  isMobile,
 }) => {
   const handleCellChange = (
     rowIndex: number,
@@ -28,11 +32,13 @@ const MandalArtGrid: React.FC<MandalArtGridProps> = ({
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-4">Mandalart Canvas</h2>
-      <div className="grid grid-cols-3 gap-4 mb-4">
+    <div
+      className={`p-4 bg-white rounded-lg shadow ${isMobile ? 'w-full' : ''}`}
+    >
+      <h2 className="text-2xl font-bold mb-4">Mandal-art Planner</h2>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4">
         {grid.map((row, rowIndex) => (
-          <div key={rowIndex} className="grid grid-cols-3 gap-1">
+          <div key={rowIndex} className="grid grid-cols-3 gap-1 sm:gap-2">
             {row.map((cell, colIndex) => (
               <input
                 key={`${rowIndex}-${colIndex}`}
@@ -41,7 +47,7 @@ const MandalArtGrid: React.FC<MandalArtGridProps> = ({
                 onChange={(e) =>
                   handleCellChange(rowIndex, colIndex, e.target.value)
                 }
-                className={`w-full h-12 p-2 text-sm border rounded ${
+                className={`w-full h-12 p-2 text-sm sm:text-base border rounded min-h-[44px] ${
                   rowIndex === 4 && colIndex === 4
                     ? 'bg-yellow-100 font-bold'
                     : 'bg-gray-50'
@@ -55,10 +61,12 @@ const MandalArtGrid: React.FC<MandalArtGridProps> = ({
         ))}
       </div>
       <div className="flex justify-end space-x-2">
-        <Button onClick={onReset} variant="outline">
+        <Button onClick={onReset} variant="outline" className="min-h-[44px]">
           Reset
         </Button>
-        <Button onClick={onSave}>Save</Button>
+        <Button onClick={onSave} className="min-h-[44px]">
+          Save
+        </Button>
       </div>
     </div>
   );
