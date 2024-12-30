@@ -2,6 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-json';
+import 'prismjs/themes/prism.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { mapToJson } from '../lib/utils';
 
@@ -26,16 +29,13 @@ const JSONEditor: React.FC<JSONEditorProps> = ({
   isMobile,
 }) => {
   const [editorContent, setEditorContent] = useState(mapToJson(mandalartMap));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [prism, setPrism] = useState<any>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadPrism = async () => {
       try {
-        const Prism = await import('prismjs');
-        await import('prismjs/components/prism-json');
-        await import('prismjs/themes/prism.css');
-
         if (Prism.languages && !Prism.languages.json) {
           Prism.languages.json = {
             property: {
