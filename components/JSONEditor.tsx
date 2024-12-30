@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useRef, useState } from 'react';
+import { mapToJson } from '../lib/utils';
 
 const Editor = dynamic(
   () => import('react-simple-code-editor').then((mod) => mod.default),
@@ -10,17 +11,21 @@ const Editor = dynamic(
 );
 
 interface JSONEditorProps {
-  value: string;
-  onImport: (json: string) => void;
+  mandalartMap: Map<string, { core: string; values: string[] }>;
+  setMandalartMap: (
+    value: React.SetStateAction<
+      Map<string, { core: string; values: string[] }>
+    >,
+  ) => void;
   isMobile: boolean;
 }
 
 const JSONEditor: React.FC<JSONEditorProps> = ({
-  value,
-  onImport,
+  mandalartMap,
+  setMandalartMap,
   isMobile,
 }) => {
-  const [editorContent, setEditorContent] = useState(value);
+  const [editorContent, setEditorContent] = useState(mapToJson(mandalartMap));
   const [prism, setPrism] = useState<any>(null);
   const editorRef = useRef<HTMLDivElement>(null);
 
@@ -67,16 +72,40 @@ const JSONEditor: React.FC<JSONEditorProps> = ({
     }
   }, []);
 
+  useEffect(() => {
+    setEditorContent(mapToJson(mandalartMap));
+  }, [mandalartMap]);
+
   const handleImport = () => {
-    onImport(editorContent);
+    const parsedObj = JSON.parse(editorContent);
+    const newMap = new Map<string, { core: string; values: string[] }>(
+      Object.entries(parsedObj) as [
+        string,
+        { core: string; values: string[] },
+      ][],
+    );
+    for (let i = 1; i <= 8; i++) {
+      const key = `${i}`;
+      if (mandalartMap.get(key)?.core !== newMap.get(key)?.core) {
+        const currentCoreValues = newMap.get('core')?.values || [];
+        currentCoreValues[i - 1] = newMap.get(key)?.core || '';
+        newMap.set('core', {
+          core: newMap.get('core')?.core || '',
+          values: currentCoreValues,
+        });
+        break;
+      }
+    }
+    setMandalartMap(newMap);
   };
 
   const handleExport = () => {
-    const blob = new Blob([editorContent], { type: 'application/json' });
+    const json = mapToJson(mandalartMap);
+    const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'mandal-art-grid.json';
+    a.download = 'mandalart.json';
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -96,7 +125,7 @@ const JSONEditor: React.FC<JSONEditorProps> = ({
     >
       <div className="flex justify-between p-4 border-b">
         <Button onClick={handleImport} className="min-h-[44px]">
-          Import JSON
+          Import / Apply JSON
         </Button>
         <Button onClick={handleExport} className="min-h-[44px]">
           Export JSON
